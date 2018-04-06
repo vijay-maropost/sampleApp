@@ -60,11 +60,23 @@ set :pty, true
 # Default value for :linked_files is [] for example files that you dont want to send to git. like application.yml
 set :linked_files, fetch(:linked_files, []).push()
 
-namespace :deploy do
-    desc 'Restart application'
-    task :restart, roles: :app, except: { no_release: true } do
-      run 'sudo /etc/init.d/nginx restart'
-    end
 
-    after :publishing, :restart
+namespace :deploy do
+  desc 'Restart application'
+  task :restart do
+    on roles(:web), in: :sequence, wait: 5 do
+      execute 'sudo service nginx restart'
+    end
+  end
+
+  after :publishing, :restart
 end
+
+
+
+# set :application, 'sampleApp' #change this to the name of your app
+# set :repo_url, 'git@github.com:vijay-maropost/sampleApp.git'
+# set :deploy_to, '/home/ubuntu/sampleApp'
+# set :use_sudo, true
+# set :branch, 'master' #or whichever branch you want to use
+# set :linked_dirs, fetch(:linked_dirs, []).push('log', 'tmp/pids', 'tmp/cache', 'tmp/sockets', 'vendor/bundle', 'public/system')
