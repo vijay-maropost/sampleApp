@@ -37,3 +37,34 @@ set :repo_url, "git@example.com:me/my_repo.git"
 
 # Uncomment the following to require manually verifying the host key before first deploy.
 # set :ssh_options, verify_host_key: :secure
+
+
+set :application, 'sampleApp'
+set :repo_url, 'git@github.com:vijay-maropost/sampleApp.git'
+
+# Default branch is :master
+ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp
+
+# Default deploy_to directory is /var/www/my_app_name
+set :deploy_to, '/home/ubuntu/sampleApp'
+
+# Default value for :scm is :git
+set :scm, :git
+
+# Default value for :format is :airbrussh.
+set :format, :pretty
+
+# Default value for :pty is false
+set :pty, true
+
+# Default value for :linked_files is [] for example files that you dont want to send to git. like application.yml
+set :linked_files, fetch(:linked_files, []).push()
+
+namespace :deploy do
+    desc 'Restart application'
+    task :restart, roles: :app, except: { no_release: true } do
+      run 'sudo /etc/init.d/nginx restart'
+    end
+
+    after :publishing, :restart
+end
