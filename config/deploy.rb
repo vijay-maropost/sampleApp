@@ -72,7 +72,17 @@ namespace :deploy do
   after :publishing, :restart
 end
 
+task :migrate do
+  on roles(:app) do
+    within release_path do
+      with rack_env: fetch(:rack_env) do
+        execute :rake, "db:migrate"
+      end
+    end
+  end
+end
 
+after 'deploy', 'migrate'
 
 # set :application, 'sampleApp' #change this to the name of your app
 # set :repo_url, 'git@github.com:vijay-maropost/sampleApp.git'
